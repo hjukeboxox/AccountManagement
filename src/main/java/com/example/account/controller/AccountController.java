@@ -1,12 +1,10 @@
 package com.example.account.controller;
 
 import com.example.account.domain.Account;
-import com.example.account.dto.AccountDto;
 import com.example.account.dto.AccountInfo;
 import com.example.account.dto.CreateAccount;
 import com.example.account.dto.DeleteAccount;
 import com.example.account.service.AccountService;
-import com.example.account.service.RedisTestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +16,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
-    private final RedisTestService redisTestService;
 
     @PostMapping("/account")
     public CreateAccount.Response createAccount(
@@ -49,12 +46,11 @@ public class AccountController {
     }
 
 
-
     @GetMapping("/account")
     public List<AccountInfo> getAccountsByUserId(
             @RequestParam("user_id") Long userId
     ) {
-       return accountService.getAccountsByUserId(userId)
+        return accountService.getAccountsByUserId(userId)
                 .stream().map(accountDto -> AccountInfo.builder()
                         .accountNumber(accountDto.getAccountNumber())
                         .balance(accountDto.getBalance())
@@ -62,11 +58,6 @@ public class AccountController {
                 .collect(Collectors.toList()); //이 코드는 성능엔 좋지않으나 성능맞추려다 유지보수나 보안을 놓침. 성능이슈 있을때 신경쓰는것이좋다
     }
 
-
-    @GetMapping("/get-lock")
-    public String getLock() {
-        return redisTestService.getLock();
-    }
 
     @GetMapping("/account/{id}")
     public Account getAccount(

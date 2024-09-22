@@ -7,9 +7,7 @@ import com.example.account.dto.DeleteAccount;
 import com.example.account.exception.AccountException;
 import com.example.account.type.AccountStatus;
 import com.example.account.service.AccountService;
-import com.example.account.service.RedisTestService;
 import com.example.account.type.ErrorCode;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +34,6 @@ class AccountControllerTest {
     @MockBean
     private AccountService accountService;
 
-    @MockBean
-    private RedisTestService redisTestService;
 
     //mocking울 통해 가짜 서비스를 만들고 mcv 에 연결해서 접근하여 테스트한다
 
@@ -145,7 +141,7 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.accountStatus").value("IN_USE"))
                 .andExpect(status().isOk());
     }
-/**
+
     @Test
     void failGetAccount() throws Exception {
         //given
@@ -160,5 +156,4 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.errorMessage").value("계좌가 없습니다."))
                 .andExpect(status().isOk());
     }
- **/
 }
