@@ -146,7 +146,7 @@ class AccountServiceTest {
         //given
         AccountUser user = AccountUser.builder()
                 .id(12L)
-                .name("pobi").build();
+                .name("Pobi").build();
         //3번의 mocking을 해야함. 실제 서비스 로직안에서 3번 리턴하는 받아서 작동하니까?
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(Optional.of(user));
@@ -159,7 +159,7 @@ class AccountServiceTest {
         //when
         AccountDto accountDto = accountService.deleteAccount(1L, "1234567890");
         //then
-        verify(accountRepository, times(0)).save(any());
+        verify(accountRepository, times(1)).save(captor.capture());
         assertEquals(12L, accountDto.getUserId());
         assertEquals("1000000012", captor.getValue().getAccountNumber());
         assertEquals(AccountStatus.UNREGISTERED, captor.getValue().getAccountStatus());
