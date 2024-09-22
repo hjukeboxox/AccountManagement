@@ -1,37 +1,22 @@
 package com.example.account.controller;
 
-import com.example.account.domain.Account;
-import com.example.account.domain.AccountUser;
-import com.example.account.domain.Transaction;
 import com.example.account.dto.*;
 import com.example.account.service.TransactionService;
-import com.example.account.type.AccountStatus;
-import com.example.account.service.AccountService;
-import com.example.account.service.RedisTestService;
-import com.example.account.type.TransactionResultType;
-import com.example.account.type.TransactionType;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 import static com.example.account.type.TransactionResultType.S;
 import static com.example.account.type.TransactionType.USE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
