@@ -3,9 +3,19 @@ POST http://localhost:8080/transaction/use
 Content-Type: application/json
 
 {
-"userId": 1,
-"accountNumber": "1000000006",
-"amount": 12345
+    "userId": 1,
+    "accountNumber": "1000000006",
+    "amount": 12345
+}
+
+### cancel balance
+POST http://localhost:8080/transaction/cancel
+Content-Type: application/json
+
+{
+    "transactionId": "342se234234sdfsd",
+    "accountNumber": "1000000006",
+    "amount": 10000
 }
 
 
