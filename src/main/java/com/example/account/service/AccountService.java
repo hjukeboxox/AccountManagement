@@ -17,9 +17,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.example.account.type.AccountStatus.IN_USE;
+import static com.example.account.type.AccountStatus.UNREGISTERED;
+import static com.example.account.type.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +40,7 @@ public class AccountService {
     public AccountDto createAccount(Long userId, Long initialBalance) {
         //리턴값 옵셔널인데 값이 없거나 문제가있으면 익셉션을 날림 orElseThrow
         AccountUser accountUser = accountUserRepository.findById(userId)
-                .orElseThrow(() -> new AccountException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
 
         //경우의 수가 많아질경우 지저분해짐 별도의 매소드로 빼는것이 좋다.
         validateCreateAccount(accountUser);
@@ -97,13 +101,13 @@ public class AccountService {
     @Transactional
     public AccountDto deleteAccount(@NotNull @Min(1) Long userId, @NotBlank @Size(min = 10, max = 10) String accountNumber) {
         AccountUser accountUser = accountUserRepository.findById(userId)
-                .orElseThrow(() -> new AccountException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
         Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new AccountException(ACCOUNT_NOT_FOUND));
 
         validateDeleteAccount(accountUser, account);
 
-        account.setAccountStatus(AccountStatus.UNREGISTERED);
+        account.setAccountStatus(UNREGISTERED);
         account.setUnRegisteredAt(LocalDateTime.now());
 
         accountRepository.save(account);
@@ -111,16 +115,28 @@ public class AccountService {
         return AccountDto.fromEntity(account);
     }
 
+    @Transactional  //안붙이면 레이지로딩이라 정상적 조회가 안됌 -> null 뜸
     private void validateDeleteAccount(AccountUser accountUser, Account account) {
         if (!Objects.equals(accountUser.getId(), account.getAccountUser().getId())) {
-            throw new AccountException(ErrorCode.USER_ACCOUNT_UN_MATCH);
+            throw new AccountException(USER_ACCOUNT_UN_MATCH);
         }
-        if (account.getAccountStatus() == AccountStatus.UNREGISTERED) {
-            throw new AccountException(ErrorCode.ACCOUNT_ALREADY_UNREGISTERED);
+        if (account.getAccountStatus() == UNREGISTERED) {
+            throw new AccountException(ACCOUNT_ALREADY_UNREGISTERED);
         }
         if (account.getBalance() > 0) {
-            throw new AccountException(ErrorCode.BALANCE_NOT_EMPTY);
+            throw new AccountException(BALANCE_NOT_EMPTY);
         }
 
+    }
+
+    public List<AccountDto> getAccountsByUserId(Long userId) {
+        AccountUser accountUser = accountUserRepository.findById(userId)
+                .orElseThrow(()-> new AccountException(USER_NOT_FOUND));
+        List<Account> accounts = accountRepository.findByAccountUser(accountUser);
+        //List<Account> -> List<AccountDto>로 변환해서 -> 리스트로바꾸고 리턴
+        return accounts.stream()
+                .map(AccountDto::fromEntity)
+                .collect(Collectors.toList());
+        //.map(account-> AccountDto.formEntity(account))도 같은 동작
     }
 }
