@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -140,5 +139,11 @@ public class TransactionService {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
         saveAndGetTransaction(CANCEL, F, account, amount);
+    }
+
+    public TransactionDto queryTransaction(String transactionId) {
+
+        return TransactionDto.fromEntity(transactionRepository.findByTransactionId(transactionId)
+                .orElseThrow(() -> new AccountException(ErrorCode.TRANSACTION_NOT_FOUND)));
     }
 }
